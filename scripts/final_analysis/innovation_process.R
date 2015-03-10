@@ -502,11 +502,11 @@ dir_pls <- plspm(imp_idata, dir_path, dir_blocks, scaling=dir_scale,
 
 library(plspm)
 
-identify.variables.to.model <- read.csv("C:/Users/Harold/Documents/_documents/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
+identify.variables.to.model <- read.csv("C:/Users/haachicanoy/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
 identify.variables.to.model <- as.matrix(identify.variables.to.model)
 identify.variables.to.model <- colnames(identify.variables.to.model)[as.numeric(which(apply(identify.variables.to.model, 2, function(x){sum(x<0.05, na.rm=T)}) > 0))]
 
-q_idata <- read.csv("C:/Users/Harold/Documents/_documents/Proyectos/Universidad del Valle/Innovacion/data_sets/excel/innovacion_variables_cuantificadas.csv")
+q_idata <- read.csv("C:/Users/haachicanoy/Documents/GitHub/PLS_path_modeling/data_sets/excel/innovacion_variables_cuantificadas.csv")
 q_idata <- q_idata[,identify.variables.to.model]
 rm(identify.variables.to.model)
 
@@ -685,9 +685,68 @@ summary(fitRidge)
 # Ajustar un modelo de regresión lineal múltiple con corrección de
 # multicolinealidad mediante técnicas de regularización
 
+library(glmnet)
 fitReg <- glmnet(x=as.matrix(scores2[,1:3]), y=scores2[,4],family="gaussian")
 summary(fitReg)
 fitReg$beta # Coeficientes del modelo
+
+# ========================================================================= #
+# Test with regularization process
+# ========================================================================= #
+
+set.seed(100)
+train.index <- sample(1:dim(scores2)[1],74,replace=FALSE)
+tr <- scores2[train.index,]
+vl <- scores2[-train.index,]
+
+lm.fit1 <- lm(DIRE~., data=tr)
+summary(lm.fit1)
+
+lm.pred1 <- predict(lm.fit1, newdata=vl)
+sqrt(mean((lm.pred1 - vl$DIRE)^2))
+
+library(glmnet)
+
+# USING RIDGE REGRESSION
+
+x.tr <- model.matrix(DIRE~., data=tr)[,-1]
+y.tr <- tr$DIRE
+x.vl <- model.matrix(DIRE~., data=vl)[,-1]
+y.vl <- vl$DIRE
+
+# CV to obtain best lambda
+set.seed(10)
+rr.cv <- cv.glmnet(x.tr, y.tr, alpha = 0)
+plot(rr.cv)
+
+rr.bestlam <- rr.cv$lambda.min
+rr.goodlam <- rr.cv$lambda.1se
+
+# predict validation set using best lambda and calculate RMSE
+rr.fit <- glmnet(x.tr, y.tr, alpha = 0)
+plot(rr.fit, xvar="lambda", label=TRUE)
+
+rr.pred <- predict(rr.fit, s=rr.bestlam, newx=x.vl)
+sqrt(mean((rr.pred - y.vl)^2))
+
+# USING LASSO REGULARIZATION PROCESS
+
+# CV to obtain best lambda
+set.seed(10)
+las.cv <- cv.glmnet(x.tr, y.tr, alpha=1)
+plot(las.cv)
+
+las.bestlam <- las.cv$lambda.min
+las.goodlam <- las.cv$lambda.1se
+
+# predict validation set using best lambda and calculate RMSE
+las.fit <- glmnet(x.tr, y.tr, alpha=1)
+plot(las.fit, xvar="lambda", label=TRUE)
+
+las.pred <- predict(las.fit, s=las.bestlam, newx=x.vl)
+sqrt(mean((las.pred - y.vl)^2))
+
+# ========================================================================= #
 
 write.csv(scores2, "G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/model/scores_final_model.csv", row.names=FALSE)
 
