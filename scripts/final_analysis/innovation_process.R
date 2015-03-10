@@ -685,7 +685,9 @@ summary(fitRidge)
 # Ajustar un modelo de regresión lineal múltiple con corrección de
 # multicolinealidad mediante técnicas de regularización
 
-
+fitReg <- glmnet(x=as.matrix(scores2[,1:3]), y=scores2[,4],family="gaussian")
+summary(fitReg)
+fitReg$beta # Coeficientes del modelo
 
 write.csv(scores2, "G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/model/scores_final_model.csv", row.names=FALSE)
 
