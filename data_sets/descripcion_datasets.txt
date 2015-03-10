@@ -1,0 +1,10 @@
+
+### Bases de datos - Innovación
+
+# SPSS
+- Innovacion_original.sav: Base de datos sin ninguna modificación
+- Innovacion_variables_codificadas: Base de datos a ser analizada
+- Innovacion_variables_seleccionadas: Base de datos con todas las variables seleccionadas incluyendo las que tienen alto porcentaje de datos faltantes.
+
+# Excel files
+- innovacion_variables_codificadas.xlsx: Base de datos a aser analizada
