@@ -1,8 +1,7 @@
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
-# Artículo de innovación en tecnologías de la información
-# Universidad del Valle
-# CIAT
+# Innovación en tecnologías de la información
+# Universidad del Valle - CIAT
 # H. Achicanoy, 2014
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
@@ -22,9 +21,8 @@ library(FactoMineR)
 # Read data
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
-dir <- "G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/data_sets/excel"
-idata <- read.xlsx(paste(dir,"/innovacion_variables_codificadas.xlsx",sep=""), sheetIndex=1, as.data.frame=T, header=T)
-
+dir <- "C:/Users/Harold/Documents/GitHub/PLS_path_modeling/data_sets/excel"
+idata <- read.xlsx(paste0(dir,"/innovacion_variables_codificadas.xlsx"),sheetIndex=1,as.data.frame=T,header=T)
 lapply(names(idata), function(x){table(idata[,paste(x)])})
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
@@ -39,7 +37,7 @@ for(i in 1:ncol(idata)){
 }; rm(i)
 
 # Ordinal scale
-ord_var <- c("P3", "P4", "P6_9", "P17_4", "P17_6", "P17_18", "P34_3", "P34_5", "P34_9")
+ord_var <- c("P3","P4","P6_9","P17_4","P17_6","P17_18","P34_3","P34_5","P34_9")
 for(ord in ord_var){
   idata[,ord] <- ordered(idata[,ord])
 }; rm(ord); rm(ord_var)
@@ -77,7 +75,7 @@ rownames(p.chisq) = colnames(idata)
 
 library(gplots)
 color_scale = colorRampPalette(c("tomato3","lightyellow","lightseagreen"), space="rgb")(50)
-png("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/association_matrix.png", width=1500, height=1500, pointsize=25)
+png("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/association_matrix.png", width=1500, height=1500, pointsize=25)
   plot.new()
   heatmap.2(p.chisq,
             main="Independence test",
@@ -97,7 +95,7 @@ rm(p.chisq)
 rm(color_scale)
 
 #== Writting association matrix original
-# write.csv(p.chisq,"G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_original.csv",row.names=T)
+# write.csv(p.chisq,"C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_original.csv",row.names=T)
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 #== pendiente: hacer estadísticas descriptivas para todas las variables !!!
@@ -133,13 +131,13 @@ par(op)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
 # Explore patterns
-png("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/missing_data/pattern_missing_items.png", width=1500, height=1500, pointsize=25)
+png("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/missing_data/pattern_missing_items.png", width=1500, height=1500, pointsize=25)
   par(mar=c(5, 6, 4, 2) + 0.1) # bottom, left, top, right
   missing.pattern.plot(idata, gray.scale=TRUE, main="",
                        xlab="Pattern of missing items")
 dev.off()
 
-png("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/missing_data/pattern_missing_items2.png", width=1500, height=1500, pointsize=25)
+png("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/missing_data/pattern_missing_items2.png", width=1500, height=1500, pointsize=25)
   par(mar=c(5, 6, 4, 2) + 0.1) # bottom, left, top, right
   mp.plot(idata, y.order=TRUE, x.order=TRUE, gray.scale=TRUE, main="")
 dev.off()
@@ -159,22 +157,10 @@ plot(IMP2) # Verify stability of estimates
 print(IMP2)
 
 # Save workspace
-save.image(file="G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/results_innovation.RData")
+save.image(file="C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/results_innovation.RData")
 
 # Load workspace
-load("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/results_innovation.RData")
-
-# # Direccionamiento estratégico: P6_9, P17_4, P34_9
-# # Sistemas de información y software
-# fit.test <- with(IMP2, polr(P17_4 ~ P17_6 + P17_18 + P20_1 + P20_2 + P20_4 + P20_5 + P20_6 + P20_7 + P20_10, Hess=TRUE))
-# print(pool(fit.test))
-# round(summary(pool(fit.test)), 2)
-# 
-# IMP2$chainMean
-# IMP2$chainVar
-# 
-# densityplot(IMP2, scales=list(x=list(relation="free")), layout=c(10, 10))
-# est <- pool(fit.test)
+load("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/results_innovation.RData")
 
 mImp_var <- IMP2$imp[names(IMP2$nmis)[which(IMP2$nmis>0)]]
 varList <- names(mImp_var)
@@ -225,14 +211,14 @@ rm(varList)
 rm(mImp_var)
 rm(imp_process)
 
-save.image(file="G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/results_innovation.RData")
-write.csv(imp_idata, "G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/data_sets/excel/innovacion_variables_imputed.csv",row.names=F)
+save.image(file="C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/results_innovation.RData")
+write.csv(imp_idata, "C:/Users/Harold/Documents/GitHub/PLS_path_modeling/data_sets/excel/innovacion_variables_imputed.csv",row.names=F)
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 # Verify similarity between independence tests
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
-load("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/results_innovation.RData")
+load("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/results_innovation.RData")
 
 # Chi-square test for imputed data
 options(warn=-1)
@@ -248,11 +234,11 @@ colnames(p.chisq.imp) = colnames(imp_idata)
 rownames(p.chisq.imp) = colnames(imp_idata)
 
 #== Writting association matrix original
-# write.csv(p.chisq.imp,"F:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_imputed.csv",row.names=T)
+# write.csv(p.chisq.imp,"C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv",row.names=T)
 
 library(gplots)
 color_scale = colorRampPalette(c("tomato3","lightyellow","lightseagreen"), space="rgb")(50)
-png("F:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/association_matrix_imputed.png", width=1500, height=1500, pointsize=25)
+png("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/association_matrix_imputed.png", width=1500, height=1500, pointsize=25)
 plot.new()
 heatmap.2(p.chisq.imp,
           main="Independence test",
@@ -273,10 +259,10 @@ rm(p.chisq.imp)
 # Compare association matrices
 
 # Original data
-p.chisq.org <- read.csv("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_original.csv",row.names=1)
+p.chisq.org <- read.csv("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_original.csv",row.names=1)
 
 # Imputed data
-p.chisq.imp <- read.csv("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_imputed.csv",row.names=1)
+p.chisq.imp <- read.csv("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv",row.names=1)
 
 # Identify percent of significative associations
 sig.asso.org <- as.matrix(p.chisq.org)
@@ -300,7 +286,6 @@ mantel.res <- mantel.rtest(p.chisq.org, p.chisq.imp, nrepet=10000)
 library(vegan)
 mantel(p.chisq.org, p.chisq.imp, method="pearson", permutations=10000)
 mantel(p.chisq.org, p.chisq.imp, method="spearman", permutations=10000)
-#mantel(p.chisq.org, p.chisq.imp, method="kendall", permutations=10000)
 
 # Observated correlation: 0.97
 # Statistically significative
@@ -421,7 +406,7 @@ par(op)
 # Construct path model with categorical data (we have problems with code)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 
-identify.variables.to.model <- read.csv("G:/Mis documentos/Proyectos/Universidad del Valle/Innovacion/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
+identify.variables.to.model <- read.csv("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
 identify.variables.to.model <- as.matrix(identify.variables.to.model)
 identify.variables.to.model <- colnames(identify.variables.to.model)[as.numeric(which(apply(identify.variables.to.model, 2, function(x){sum(x<0.05, na.rm=T)}) > 0))]
 
@@ -483,8 +468,8 @@ dir_blocks <- list(hard_var,
 # Specifying scale of measurement
 
 dir_scale <- list(rep("NOM",length(hard_var)),
-                  c(rep("ORD",2),rep("NOM",10)),
-                  c("ORD",rep("NOM",length(netw_var)-1)),
+                  c(rep("ORD",1),rep("NOM",10)),
+                  c("ORD",rep("NOM",25)),
                   rep("ORD",3))
 
 # All latent variables are measured in a (reflective) way
@@ -502,11 +487,11 @@ dir_pls <- plspm(imp_idata, dir_path, dir_blocks, scaling=dir_scale,
 
 library(plspm)
 
-identify.variables.to.model <- read.csv("C:/Users/haachicanoy/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
+identify.variables.to.model <- read.csv("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/results/correlation_analysis/chisq_matrix_imputed.csv", row.names=1)
 identify.variables.to.model <- as.matrix(identify.variables.to.model)
 identify.variables.to.model <- colnames(identify.variables.to.model)[as.numeric(which(apply(identify.variables.to.model, 2, function(x){sum(x<0.05, na.rm=T)}) > 0))]
 
-q_idata <- read.csv("C:/Users/haachicanoy/Documents/GitHub/PLS_path_modeling/data_sets/excel/innovacion_variables_cuantificadas.csv")
+q_idata <- read.csv("C:/Users/Harold/Documents/GitHub/PLS_path_modeling/data_sets/excel/innovacion_variables_cuantificadas.csv")
 q_idata <- q_idata[,identify.variables.to.model]
 rm(identify.variables.to.model)
 
@@ -676,6 +661,8 @@ round(dir_pls$inner_model$DIRE, 3)
 
 scores2 <- dir_pls3$scores
 scores2 <- as.data.frame(scores2)
+
+cor(scores2)
 
 # Regresión Ridge para los constructos obtenidos
 library(ridge)
