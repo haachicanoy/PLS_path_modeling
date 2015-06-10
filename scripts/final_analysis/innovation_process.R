@@ -471,10 +471,15 @@ dir_blocks <- list(hard_var,
 
 # Specifying scale of measurement
 
-dir_scale <- list(rep("NOM",length(hard_var)),
-                  c(rep("ORD",2),rep("NOM",9)),
-                  c(rep("ORD",1),rep("NOM",25)),
-                  rep("ORD",3))
+for(i in 1:ncol(imp_idata)){
+  imp_idata[,i] <- as.character(imp_idata[,i])
+  imp_idata[,i] <- as.numeric(imp_idata[,i])
+}; rm(i)
+
+# dir_scale <- list(rep("NOM",length(hard_var)),
+#                   c(rep("ORD",2),rep("NOM",9)),
+#                   c(rep("ORD",1),rep("NOM",25)),
+#                   rep("ORD",3))
 
 # All latent variables are measured in a (reflective) way
 
@@ -482,8 +487,8 @@ dir_modes <- rep("B", 4)
 
 # Run model
 
-dir_pls <- plspm(imp_idata, dir_path, dir_blocks, scaling=dir_scale,
-                 modes=dir_modes, scheme="centroid", plscomp=c(1,1,1,1), tol=0.0000001)
+dir_pls <- plspm(imp_idata, dir_path, dir_blocks,
+                 scheme="centroid", modes=dir_modes, tol=0.0000001)
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #
 # Construct path model with quantified data
@@ -663,8 +668,37 @@ pairs(dir_pls3$scores, pch=20, cex=1.2, col="forestgreen")
 
 round(dir_pls$inner_model$DIRE, 3)
 
+# Hacer gráfico final
 scores2 <- dir_pls3$scores
 scores2 <- as.data.frame(scores2)
+names(scores2)
+
+library(ggplot2)
+
+scoresT <- data.frame(Componente=c(rep('Hardware',length(scores2$HARD)),
+                                  rep('Software',length(scores2$SOFT)),
+                                  rep('Redes',length(scores2$NETW))),
+                      value=c(scores2$HARD,scores2$SOFT,scores2$NETW),
+                      response=rep(scores2$DIRE,3))
+
+colors <- c("blue","darkgreen","red3")
+scoresT$Componente <- factor(scoresT$Componente)
+p <- ggplot(scoresT, aes(x=value, y=response, colour=Componente))
+p <- p + geom_point(alpha=.25)
+p <- p + scale_colour_manual(values=c("red3","darkgreen","blue"))
+p <- p + stat_smooth(aes(fill=Componente), alpha=.3, method=lm, fullrange=T)
+p <- p + xlab('Innovación tecnológica') + ylab('Direccionamiento estratégico')
+#p <- p + labs(fill='')
+#p <- p + guides(colour=FALSE)
+p <- p + theme(axis.text.x = element_text(size=12),
+               axis.text.y = element_text(size=12),
+               axis.title.x = element_text(face="bold",size=13),
+               axis.title.y = element_text(face="bold",size=13),
+               legend.text = element_text(size=11),
+               legend.background=element_blank(),
+               legend.key=element_blank(),
+               legend.title = element_text(face='bold',size=11))
+p
 
 cor(scores2)
 
